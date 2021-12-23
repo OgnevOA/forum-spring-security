@@ -1,5 +1,7 @@
 package telran.b7a.security.service;
 
+
+
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,6 +30,10 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 				.antMatchers("/forum/posts/**")
 					.permitAll()
+				.antMatchers("/account/password/**")
+					.authenticated()
+				.antMatchers("/forum/**", "/account/**")
+					.access("@customSecurity.isPasswordActual(authentication.name)")
 				.antMatchers("/account/user/{login}/role/{role}/**")
 					.hasRole("ADMINISTRATOR")
 				.antMatchers(HttpMethod.PUT,"/account/user/{userName}/**")
@@ -46,10 +52,3 @@ public class AuthorizationConfiguration extends WebSecurityConfigurerAdapter {
 					.authenticated();
 	}
 }
-
-
-
-
-
-
-
