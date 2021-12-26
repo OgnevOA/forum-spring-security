@@ -13,22 +13,27 @@ import telran.b7a.forum.model.Post;
 @Service("customSecurity")
 public class CustomWebSecurity {
 
-	ForumMongoRepository repository;
+	ForumMongoRepository postRepo;
 	AccountingMongoRepository userRepo;
 
 	@Autowired
-	public CustomWebSecurity(ForumMongoRepository repository, AccountingMongoRepository userRepo) {
-		this.repository = repository;
+	public CustomWebSecurity(ForumMongoRepository postRepo, AccountingMongoRepository userRepo) {
+		this.postRepo = postRepo;
 		this.userRepo = userRepo;
 	}
 
 	public boolean checkPostAuthority(String postId, String userName) {
-		Post post = repository.findById(postId).orElse(null);
+		Post post = postRepo.findById(postId).orElse(null);
 		return post != null && userName.equals(post.getAuthor());
 	}
-	
+
 	public boolean isPasswordActual(String userName) {
 		User user = userRepo.findById(userName).orElse(null);
-		return user!= null && LocalDate.now().isBefore(user.getPasswordExpDate());
+		return user != null && LocalDate.now().isBefore(user.getPasswordExpDate());
 	}
 }
+
+
+
+
+

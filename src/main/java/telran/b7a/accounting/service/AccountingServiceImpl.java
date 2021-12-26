@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ import telran.b7a.accounting.model.User;
 @Service
 public class AccountingServiceImpl implements UserAccountService {
 	
+	@Value("${password.period}")
+	int passwordPeriod;
 	AccountingMongoRepository accRepository;
 	ModelMapper modelMapper;
 	PasswordEncoder passwordEncoder;
@@ -39,7 +42,7 @@ public class AccountingServiceImpl implements UserAccountService {
 		String password = passwordEncoder.encode(userInfo.getPassword());
 		user.setPassword(password);
 		user.addRole("USER");
-		user.setPasswordExpDate(LocalDate.now().plusMonths(1));
+		user.setPasswordExpDate(LocalDate.now().plusDays(passwordPeriod));
 		accRepository.save(user);
 		return modelMapper.map(user, UserResponseDto.class);
 	}
@@ -86,7 +89,7 @@ public class AccountingServiceImpl implements UserAccountService {
 	public void changePassword(String login, String password) {
 		User user = accRepository.findById(login).orElseThrow(() -> new UserNotFoundException());
 		user.setPassword(passwordEncoder.encode(password));
-		user.setPasswordExpDate(LocalDate.now().plusMonths(1));
+		user.setPasswordExpDate(LocalDate.now().plusDays(passwordPeriod));
 		accRepository.save(user);
 	}
 
