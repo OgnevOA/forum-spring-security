@@ -1,12 +1,10 @@
 package telran.b7a.security.service;
 
-import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import telran.b7a.accounting.dao.AccountingMongoRepository;
-import telran.b7a.accounting.model.User;
 import telran.b7a.forum.dao.ForumMongoRepository;
 import telran.b7a.forum.model.Post;
 
@@ -27,9 +25,9 @@ public class CustomWebSecurity {
 		return post != null && userName.equals(post.getAuthor());
 	}
 
-	public boolean isPasswordActual(String userName) {
-		User user = userRepo.findById(userName).orElse(null);
-		return user != null && LocalDate.now().isBefore(user.getPasswordExpDate());
+	public boolean isPasswordActual(Authentication authentication) {
+		CustomSecurityUser user = (CustomSecurityUser) authentication.getPrincipal();
+		return user.isPasswordActual();
 	}
 }
 

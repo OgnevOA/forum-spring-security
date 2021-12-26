@@ -1,5 +1,7 @@
 package telran.b7a.security.service;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,9 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 								.stream()
 								.map(r -> "ROLE_" + r.toUpperCase())
 								.toArray(String[]::new);
-		return new org.springframework.security.core.userdetails.User(username, userAccount.getPassword(),
-				AuthorityUtils.createAuthorityList(roles));
-//		return new org.springframework.security.core.userdetails.User(username, userAccount.getPassword(), true, true, true, true, AuthorityUtils.createAuthorityList(roles));
+		boolean isPasswordActual = LocalDate.now().isBefore(userAccount.getPasswordExpDate());
+		return new CustomSecurityUser(username, userAccount.getPassword(), AuthorityUtils.createAuthorityList(roles), isPasswordActual);
+//		return new org.springframework.security.core.userdetails.User(username, userAccount.getPassword(), true, true, false, true, AuthorityUtils.createAuthorityList(roles));
 	}
 
 }
